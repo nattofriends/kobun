@@ -26,5 +26,5 @@ while True:
             if cand in msg:
                 cands.append(repl)
 
-        write_line(server, "PRIVMSG", [target, random.select(cands).encode("utf-8")])
+        write_line(server, "PRIVMSG", [target, random.choice(cands).encode("utf-8")])
 
