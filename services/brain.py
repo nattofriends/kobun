@@ -33,5 +33,5 @@ while True:
                 reply = brain.reply(msg).encode("utf-8")
                 write_line(server, "PRIVMSG", [target, reply])
 
-        brain.learn(msg.decode("utf-8"))
+        brain.learn(msg)
 
