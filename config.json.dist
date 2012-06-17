@@ -16,6 +16,7 @@
     "services": [
         "autojoin.py",
         "brain.py",
+        "cannedreplies.py",
         "logger.py",
         "quotes.py",
         "title.py",
