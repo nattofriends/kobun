@@ -81,6 +81,9 @@ while True:
             command = match.group("command")
             args = match.group("args")
 
+            if args:
+                args = args.strip()
+
             if command == "add":
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Did you forget to enter a quote?"])
