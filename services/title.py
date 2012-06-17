@@ -15,7 +15,7 @@ handshake("display the title of a page")
 config = load_config()
 
 SCAN_EXPR = re.compile(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+')
-
+DESPACE_EXPR = re.compile(r'\s+')
 
 def worker(server, target, url):
     if not (url.startswith("http:") or url.startswith("https:")):
@@ -31,10 +31,14 @@ def worker(server, target, url):
         try:
             write_line(server, "PRIVMSG", [
                 target,
-                "\x02Title:\x02 {}".format(pq(requests.get(url).text)("title") \
-                    .text() \
-                    .encode("utf-8") \
-                    .replace("\n", " ") or \
+                "\x02Title:\x02 {}".format(
+                    DESPACE_EXPR.sub(
+                        " ",
+                        pq(requests.get(url).text)("title") \
+                            .text() \
+                            .encode("utf-8") \
+                            .replace("\n", " ")
+                    ) or \
                 "(no title)")
             ])
         except urllib2.HTTPError as e:
