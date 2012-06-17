@@ -1,0 +1,27 @@
+{
+    "servers": {
+        "irc.freenode.net:6667": {
+            "nick": "Kobun2",
+            "user": "kobun",
+            "realname": "rfw",
+            "channels": [
+                "#kobun2"
+            ],
+            "admins": [
+                "rfw_?!.*@unaffiliated/rofflwaffls"
+            ]
+        }
+    },
+
+    "services": [
+        "brain.py",
+        "autojoin.py",
+        "title.py",
+        "wolframalpha.py",
+        "whatthecommit.py",
+        "sux.py"
+    ],
+
+    "wolframalpha.appid": "APPID GOES HERE"
+}
+
