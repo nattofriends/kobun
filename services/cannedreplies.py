@@ -1,4 +1,5 @@
 #!/usr/bin/env python2
+# encoding: utf-8
 
 from kobunsupport import load_config, handshake, read_line, write_line
 
