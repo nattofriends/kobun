@@ -117,7 +117,7 @@ while True:
                     if not qids:
                         write_line(server, "PRIVMSG", [target, "No quotes found matching criteria."])
                     elif len(qids) == 1:
-                        qid, content = view_quote(args, target.lower())
+                        qid, content = view_quote(qids[0], target.lower())
                         write_line(server, "PRIVMSG", [target, "\x02Quote {}:\x02 {}".format(qid, content.encode("utf-8"))])
                     else:
                         write_line(server, "PRIVMSG", [target, "\x02Quotes found:\x02 {}".format(", ".join(str(x) for x in qids))])
