@@ -11,7 +11,7 @@ config = load_config()
 
 
 def worker(server, target):
-    write_line(server, "PRIVMSG", [target, "\x02WhatTheCommit:\x02 {}".format(requests.get("http://whatthecommit.com/index.txt").text)])
+    write_line(server, "PRIVMSG", [target, "\x02WhatTheCommit:\x02 {}".format(requests.get("http://whatthecommit.com/index.txt").text.strip().replace("\n", " "))])
 
 def core():
     while True:

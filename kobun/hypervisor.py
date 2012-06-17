@@ -225,6 +225,40 @@ class Hypervisor(object):
                                             target,
                                             "\x02Unloaded:\x02 {}".format(service)
                                         )
+
+                            elif params[0] == "reload":
+                                if len(params) != 2:
+                                    irc_client.send_msg(
+                                        target,
+                                        "\x02Hypervisor Error:\x02 need 1 parameter exactly"
+                                    )
+                                else:
+                                    service = params[1]
+                                    try:
+                                        self.unload_service(service)
+                                    except ServiceError as e:
+                                        irc_client.send_msg(
+                                            target,
+                                            "\x02Service Error for {}:\x02 {}".format(service, e)
+                                        )
+                                    else:
+                                        irc_client.send_msg(
+                                            target,
+                                            "\x02Unloaded:\x02 {}".format(service)
+                                        )
+                                    try:
+                                        self.load_service(service)
+                                    except ServiceError as e:
+                                        irc_client.send_msg(
+                                            target,
+                                            "\x02Service Error for {}:\x02 {}".format(service, e)
+                                        )
+                                    else:
+                                        irc_client.send_msg(
+                                            target,
+                                            "\x02Loaded:\x02 {}".format(service)
+                                        )
+
                         else:
                             irc_client.send_msg(
                                 target,
