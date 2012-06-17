@@ -34,7 +34,7 @@ def worker(server, target, url):
                 "\x02Title:\x02 {}".format(
                     DESPACE_EXPR.sub(
                         " ",
-                        pq(requests.get(url).text)("title") \
+                        pq(requests.get(url).text.decode("utf-8"))("title") \
                             .text() \
                             .encode("utf-8") \
                             .replace("\n", " ")
