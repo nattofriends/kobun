@@ -16,6 +16,7 @@
     "services": [
         "autojoin.py",
         "brain.py",
+        "logger.py",
         "quotes.py",
         "title.py",
         "wolframalpha.py",
@@ -23,6 +24,7 @@
         "sux.py"
     ],
 
-    "wolframalpha.appid": "APPID GOES HERE"
+    "wolframalpha.appid": "APPID GOES HERE",
+    "logger.file": "kobun.log"
 }
 
