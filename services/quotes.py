@@ -85,7 +85,7 @@ while True:
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Did you forget to enter a quote?"])
                 else:
-                    qid = insert_quote(args, target.lower())
+                    qid = insert_quote(args.decode("utf-8"), target.lower())
                     write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
             elif command == "del":
                 if delete_quote(args, target.lower()):

@@ -14,8 +14,9 @@
     },
 
     "services": [
-        "brain.py",
         "autojoin.py",
+        "brain.py",
+        "quotes.py",
         "title.py",
         "wolframalpha.py",
         "whatthecommit.py",

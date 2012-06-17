@@ -29,7 +29,7 @@ def worker(server, target, url):
         write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(response.headers["content-type"])])
     else:
         try:
-            write_line(server, "PRIVMSG", [target, "\x02Title:\x02 {}".format(pq(url=url)("title").text() or "(no title)")])
+            write_line(server, "PRIVMSG", [target, "\x02Title:\x02 {}".format(pq(url=url)("title").text().encode("utf-8") or "(no title)")])
         except urllib2.HTTPError as e:
             write_line(server, "PRIVMSG", [target, "\x02Request Error:\x02 {}".format(e)])
 
