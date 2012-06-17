@@ -8,7 +8,7 @@ handshake("legacy-style kobun logger")
 
 config = load_config()
 
-f = open(config["logger.file"], "wa")
+f = open(config["logger.file"], "a")
 
 while True:
     server, prefix, command, args = read_line()
