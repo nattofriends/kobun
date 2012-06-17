@@ -29,12 +29,18 @@ def worker(server, target, url):
         write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(response.headers["content-type"])])
     else:
         try:
+            r = requests.get(url)
+            try: # XXX: DIRTY HORRIBLE BUT WORKING HACK
+                p = pq(r.text)
+            except ValueError:
+                p = pq(r.content)
+
             write_line(server, "PRIVMSG", [
                 target,
                 "\x02Title:\x02 {}".format(
                     DESPACE_EXPR.sub(
                         " ",
-                        pq(requests.get(url).content)("title") \
+                        p("title") \
                             .text() \
                             .encode("utf-8") \
                             .replace("\n", " ")
