@@ -19,7 +19,7 @@ def worker(server, target, query):
         'format': 'plaintext'
     }))
 
-    for line in (p("queryresult[success='true'] > pod[primary='true'] > subpod[primary='true']:first-child > plaintext").text() or "(no result)").split("\n"):
+    for line in (p("queryresult[success='true'] > pod[primary='true'] > subpod:first-child > plaintext").text() or "(no result)").split("\n"):
         write_line(server, "PRIVMSG", [target, "\x02Wolfram|Alpha:\x02 {}".format(line.encode("utf-8"))])
 
 def core():
