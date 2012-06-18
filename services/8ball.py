@@ -46,6 +46,6 @@ while True:
 
         if parts[0].lower() == "!8ball":
             write_line(server, "PRIVMSG", [target, "\x02The Magic 8-Ball says:\x02 {}".format(
-                OPTIONS[(binascii.crc32(parts[1]) + int(time.time() // (60 * 60 * 24))) % len(options)]
+                OPTIONS[(binascii.crc32(parts[1]) + int(time.time() // (60 * 60 * 24))) % len(OPTIONS)]
             )])
 
