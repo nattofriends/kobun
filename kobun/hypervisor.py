@@ -39,7 +39,7 @@ class HypervisedService(object):
         self.proc.stdin.flush()
 
         try:
-            gevent.socket.wait_read(self.proc.stdout.fileno(), 5)
+            gevent.socket.wait_read(self.proc.stdout.fileno(), 10)
         except gevent.socket.timeout:
             self.proc.kill()
             raise ServiceError("did not handshake in time")
