@@ -2,6 +2,7 @@ import shlex
 import re
 import uuid
 import os
+import sys
 
 import gevent
 import gevent.pool
@@ -280,6 +281,15 @@ class Hypervisor(object):
                                     ", ".join(self.irc_clients)
                                 )
                             )
+
+                    elif params[0].lower() == "reboot":
+                        for irc_client in self.irc_clients.values():
+                            irc_client.send_command("QUIT", "Reboot requested")
+
+                        for service in self.service_clients.values():
+                            service.stop()
+
+                        os.execvp(os.path.join(sys.path[0], sys.argv[0]), sys.argv)
             else:
                 irc_client.send_msg(
                     target,
