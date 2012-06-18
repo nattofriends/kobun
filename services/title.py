@@ -37,7 +37,7 @@ def worker(server, target, url):
 
             title = p("title").text()
             if title:
-                title = DESPACE_EXPR.sub(" ", raw_title.encode("utf-8").replace("\n", " "))
+                title = DESPACE_EXPR.sub(" ", title.encode("utf-8").replace("\n", " "))
 
             write_line(server, "PRIVMSG", [
                 target,
