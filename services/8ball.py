@@ -42,7 +42,7 @@ while True:
         parts = msg.split(" ", 1)
 
         if len(parts) != 2:
-            return
+            continue
 
         if parts[0].lower() == "!8ball":
             write_line(server, "PRIVMSG", [target, "\x02The Magic 8-Ball says:\x02 {}".format(
