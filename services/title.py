@@ -35,17 +35,13 @@ def worker(server, target, url):
             except ValueError:
                 p = pq(r.content)
 
+            title = p("title").text()
+            if title:
+                title = DESPACE_EXPR.sub(" ", raw_title.encode("utf-8").replace("\n", " "))
+
             write_line(server, "PRIVMSG", [
                 target,
-                "\x02Title:\x02 {}".format(
-                    DESPACE_EXPR.sub(
-                        " ",
-                        p("title") \
-                            .text() \
-                            .encode("utf-8") \
-                            .replace("\n", " ")
-                    ) or \
-                "(no title)")
+                "\x02Title:\x02 {}".format(title or "(no title)")
             ])
         except urllib2.HTTPError as e:
             write_line(server, "PRIVMSG", [target, "\x02Request Error:\x02 {}".format(e)])
