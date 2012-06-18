@@ -14,6 +14,10 @@ while True:
         target, msg = args
 
         parts = msg.split(" ", 1)
+
+        if len(parts) != 2:
+            return
+
         if parts[0].lower() == "!sux":
             write_line(server, "PRIVMSG", [target, "fuck {what}; {what} sucks; {what} is dying; {what} is dead to me; {what} hit wtc".format(what=parts[1].strip())])
 
