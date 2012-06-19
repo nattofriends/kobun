@@ -18,6 +18,7 @@
         "autojoin.py",
         "brain.py",
         "cannedreplies.py",
+        "googleimages.py",
         "logger.py",
         "quotes.py",
         "title.py",
