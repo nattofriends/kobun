@@ -80,6 +80,7 @@ class Hypervisor(object):
     RC_EXPR = re.compile("!hypervisor(?: (?P<params>.*))?")
 
     def __init__(self, config_fn):
+        self.config_fn = config_fn
         self.load_config(config_fn)
 
         self.irc_clients = {}
@@ -296,7 +297,7 @@ class Hypervisor(object):
 
                         os.execvp(os.path.join(sys.path[0], sys.argv[0]), sys.argv)
                     elif params[0].lower() == "reload":
-                        self.load_config()
+                        self.load_config(self.config_fn)
                         irc_client.send_msg(
                             target,
                             "Reloaded configuration, requesting all service clients to reboot."
