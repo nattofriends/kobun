@@ -150,7 +150,7 @@ class Hypervisor(object):
             except OSError as e:
                 self.notify_error("{} died: {}".format(client_fn, e))
                 service.stop()
-                del self.service_clients[client_fn]
+                service.start()
 
     def on_privmsg(self, irc_client, prefix, target, message):
         if not any(re.match(admin_expr, prefix) for admin_expr in self.config["servers"][irc_client.server]["admins"]):
