@@ -66,5 +66,5 @@ while True:
         target, msg = args
 
         if ":java:" in msg:
-            write_line(server, "PRIVMSG", [random.choice(PREFIXES) + "".join(random.choice(BODIES) for _ in xrange(random.randint(3, 5))) + random.choice(SUFFIXES)])
+            write_line(server, "PRIVMSG", [target, random.choice(PREFIXES) + "".join(random.choice(BODIES) for _ in xrange(random.randint(3, 5))) + random.choice(SUFFIXES)])
 
