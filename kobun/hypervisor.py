@@ -303,7 +303,7 @@ class Hypervisor(object):
                             "Reloaded configuration, requesting all service clients to reboot."
                         )
 
-                        for service in self.service_clients:
+                        for service in self.service_clients.keys():
                             self.unload_service(service)
                             self.load_service(service)
 
