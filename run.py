@@ -6,8 +6,5 @@ logging.basicConfig(level=logging.INFO)
 import kobun
 import json
 
-with open("config.json", "r") as f:
-    config = json.load(f)
-
-kobun.run(config)
+kobun.run("config.json")
 

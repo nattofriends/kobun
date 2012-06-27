@@ -3,6 +3,7 @@ import re
 import uuid
 import os
 import sys
+import json
 
 import gevent
 import gevent.pool
@@ -78,8 +79,8 @@ class HypervisedService(object):
 class Hypervisor(object):
     RC_EXPR = re.compile("!hypervisor(?: (?P<params>.*))?")
 
-    def __init__(self, config):
-        self.config = config
+    def __init__(self, config_fn):
+        self.load_config(config_fn)
 
         self.irc_clients = {}
         self.irc_group = gevent.pool.Group()
@@ -102,6 +103,10 @@ class Hypervisor(object):
             raise ServiceError("Service not loaded")
         self.service_clients[fn].stop()
         del self.service_clients[fn]
+
+    def load_config(self, fn):
+        with open(fn, "r") as f:
+            self.config = json.load(f)
 
     def start_services(self):
         greenlets = []
@@ -290,6 +295,21 @@ class Hypervisor(object):
                             service.stop()
 
                         os.execvp(os.path.join(sys.path[0], sys.argv[0]), sys.argv)
+                    elif params[0].lower() == "reload":
+                        self.load_config()
+                        irc_client.send_msg(
+                            target,
+                            "Reloaded configuration, requesting all service clients to reboot."
+                        )
+
+                        for service in self.service_clients:
+                            self.unload_service(service)
+                            self.load_service(service)
+
+                        irc_client.send_msg(
+                            target,
+                            "Reload complete."
+                        )
             else:
                 irc_client.send_msg(
                     target,
