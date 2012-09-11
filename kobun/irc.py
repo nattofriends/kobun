@@ -46,9 +46,9 @@ CONTROL_CODES = {
 }
 
 class IRCClient(object):
-    def __init__(self, address, nick, user, realname):
+    def __init__(self, address, nick, user, realname, source_address=None):
         self.address = address
-        self.gsock = socket.create_connection(address)
+        self.gsock = socket.create_connection(address, source_address=(source_address, 0))
 
         self.nick = nick
         self.user = user
@@ -67,7 +67,8 @@ class IRCClient(object):
         log.info("Established connection to {}:{}".format(*self.address))
 
         while True:
-            lines_raw, buf = self.gsock.recv(8196).rsplit("\n", 1)
+            buf += self.gsock.recv(8195)
+            lines_raw, buf = buf.rsplit("\n", 1)
             lines = lines_raw.split("\n")
 
             for line in lines:

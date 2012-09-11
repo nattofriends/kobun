@@ -40,7 +40,7 @@ class HypervisedService(object):
         self.proc.stdin.flush()
 
         try:
-            gevent.socket.wait_read(self.proc.stdout.fileno(), 10)
+            gevent.socket.wait_read(self.proc.stdout.fileno())
         except gevent.socket.timeout:
             self.proc.kill()
             raise ServiceError("did not handshake in time")
@@ -128,7 +128,8 @@ class Hypervisor(object):
             irc_client = irc.IRCClient((hn, int(sport)),
                                        details["nick"],
                                        details["user"],
-                                       details["realname"])
+                                       details["realname"],
+                                       source_address=details.get("source_address"))
             irc_client.on_raw = functools.partial(self.on_raw, server)
             irc_client.on_privmsg = functools.partial(self.on_privmsg, irc_client)
             self.irc_clients[server] = irc_client
@@ -161,6 +162,9 @@ class Hypervisor(object):
     def on_privmsg(self, irc_client, prefix, target, message):
         if not any(re.match(admin_expr, prefix) for admin_expr in self.config["servers"][irc_client.server]["admins"]):
             return
+
+        if target[0] != '#':
+            target = prefix.split('!', 2)[0]
 
         match = self.RC_EXPR.match(message)
 

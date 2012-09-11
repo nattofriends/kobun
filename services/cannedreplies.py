@@ -12,7 +12,8 @@ config = load_config()
 
 RESPONSES = {
     "gface":    u"( ≖‿≖)",
-    "cool":     u"COOL LIKE SNOWMAN ☃"
+    "cool":     u"COOL LIKE SNOWMAN ☃",
+    "chownface":u"( ´· ‿ ·`)",
 }
 
 while True:

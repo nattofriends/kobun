@@ -11,6 +11,7 @@ config = load_config()
 
 import re
 import sqlite3
+import urllib
 
 conn = sqlite3.connect("quotes.db")
 conn.execute("""CREATE TABLE IF NOT EXISTS quotes(
@@ -49,9 +50,15 @@ def view_quote(id, context=None):
         cur.execute("SELECT id, quote FROM quotes WHERE id=?", (id,))
     return cur.fetchone()
 
+def safestem(q):
+    try:
+        return stem(q)
+    except Exception:
+        return q
+
 def find_quote(like, context=None):
     likes = [
-        "%" + stem(l.strip()).replace("!", "!!").replace("%", "!%") + "%"
+        "%" + safestem(l.strip()).replace("!", "!!").replace("%", "!%") + "%"
         for l in like.split(" ")
     ]
 
@@ -88,8 +95,12 @@ while True:
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Did you forget to enter a quote?"])
                 else:
-                    qid = insert_quote(args.decode("utf-8"), target.lower())
-                    write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
+                    try:
+                        qid = insert_quote(args.decode("utf-8"), target.lower())
+                    except Exception:
+                        pass
+                    else:
+                        write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
             elif command == "del":
                 if delete_quote(args, target.lower()):
                     write_line(server, "PRIVMSG", [target, "Quote {} deleted.".format(args)])
@@ -120,5 +131,9 @@ while True:
                         qid, content = view_quote(qids[0], target.lower())
                         write_line(server, "PRIVMSG", [target, "\x02Quote {}:\x02 {}".format(qid, content.encode("utf-8"))])
                     else:
-                        write_line(server, "PRIVMSG", [target, "\x02Quotes found:\x02 {}".format(", ".join(str(x) for x in qids))])
+                        line = "\x02{} quotes found:\x02 {}".format(len(qids), ", ".join(str(x) for x in qids))
+                        if len(line) >= 450:
+                            write_line(server, "PRIVMSG", [target,  "\x02{} quotes found:\x02 http://thor.rfw.name/wut/?{}".format(len(qids), urllib.urlencode({'q': args}))]) 
+                        else:
+                            write_line(server, "PRIVMSG", [target, line])
 

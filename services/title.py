@@ -24,16 +24,19 @@ def worker(server, target, url):
         response = requests.head(url)
     except requests.RequestException as e:
         write_line(server, "PRIVMSG", [target, "\x02Request Error:\x02 {}".format(e)])
+        return
 
-    if response.headers["content-type"].split(";")[0] not in ("text/html",):
-        write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(response.headers["content-type"])])
+    content_type = response.headers.get("content-type", "application/octet-stream").split(";")[0]
+
+    if content_type not in ("text/html",):
+        write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(content_type)])
     else:
         try:
             r = requests.get(url)
             try: # XXX: DIRTY HORRIBLE BUT WORKING HACK
-                p = pq(r.text)
+                p = pq(r.text or '')
             except ValueError:
-                p = pq(r.content)
+                p = pq(r.content or '')
 
             title = p("title").text()
             if title:
