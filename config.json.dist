@@ -16,15 +16,22 @@
     "services": [
         "8ball.py",
         "autojoin.py",
+        "baidu.py",
         "brain.py",
         "cannedreplies.py",
-        "googleimages.py",
+        "colonjavacolon.py",
+        "decide.py",
         "logger.py",
+        "gay.py",
+        "google.py",
+        "googleimages.py",
         "quotes.py",
+        "sepples.py",
         "title.py",
         "wolframalpha.py",
         "whatthecommit.py",
-        "sux.py"
+        "sux.py",
+        "zor.py"
     ],
 
     "wolframalpha.appid": "APPID GOES HERE",
