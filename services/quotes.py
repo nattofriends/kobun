@@ -3,7 +3,7 @@
 from kobunsupport import load_config, handshake, read_line, write_line
 from kobunsupport.irc import parse_prefix
 
-from stemming.lovins import stem
+from stemming.porter2 import stem
 
 handshake("quotemania")
 
@@ -21,6 +21,14 @@ conn.execute("""CREATE TABLE IF NOT EXISTS quotes(
 )""")
 
 COMMAND_EXPR = re.compile("!quote (?P<command>add|del|rand|view|read|find)(?: (?P<args>.*))?")
+
+RATE_LIMIT = {}
+RATE_LIMIT_TIME = 10
+
+def unixtime():
+    import calendar
+    import time
+    return calendar.timegm(time.gmtime())
 
 def insert_quote(quote, context):
     cur = conn.cursor()
@@ -92,20 +100,30 @@ while True:
                 args = args.strip()
 
             if command == "add":
-                if not args:
-                    write_line(server, "PRIVMSG", [target, "Did you forget to enter a quote?"])
-                else:
-                    try:
-                        qid = insert_quote(args.decode("utf-8"), target.lower())
-                    except Exception:
-                        pass
+                # do rate limit checking
+                can_do = True
+                if nick in RATE_LIMIT:
+                    if RATE_LIMIT[nick] + RATE_LIMIT_TIME > unixtime():
+                        can_do = False
+                
+                if can_do:
+                    RATE_LIMIT[nick] = unixtime()
+                            
+                    if not args:
+                        write_line(server, "PRIVMSG", [target, "Did you forget to enter a quote?"])
                     else:
-                        write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
+                        try:
+                            qid = insert_quote(args.decode("utf-8"), target.lower())
+                        except Exception:
+                            pass
+                        else:
+                            write_line(server, "PRIVMSG", [target, "Quote {} added.".format(qid)])
             elif command == "del":
-                if delete_quote(args, target.lower()):
-                    write_line(server, "PRIVMSG", [target, "Quote {} deleted.".format(args)])
-                else:
-                    write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
+                if any(re.match(admin_expr, prefix) for admin_expr in config["servers"][server]["admins"]):
+                    if delete_quote(args, target.lower()):
+                        write_line(server, "PRIVMSG", [target, "Quote {} deleted.".format(args)])
+                    else:
+                        write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
             elif command == "rand":
                 quote = random_quote(target.lower())
                 if quote is None:
