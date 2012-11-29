@@ -36,12 +36,21 @@ def insert_quote(quote, context):
     conn.commit()
     return cur.lastrowid
 
-def random_quote(context=None):
+def random_quote(like, context=None):
+    if like:
+        likes, clause = make_like_clauses(like)
+
     cur = conn.cursor()
     if context is not None:
-        cur.execute("SELECT id, quote FROM quotes WHERE context=? ORDER BY RANDOM() LIMIT 1", (context,))
+        if like:
+            cur.execute("SELECT id, quote FROM quotes WHERE {0} AND context=? ORDER BY RANDOM() LIMIT 1".format(clause), likes + [context])
+        else:
+            cur.execute("SELECT id, quote FROM quotes WHERE context=? ORDER BY RANDOM() LIMIT 1", (context,))
     else:
-        cur.execute("SELECT id, quote FROM quotes ORDER BY RANDOM() LIMIT 1")
+        if like:
+            cur.execute("SELECT id, quote FROM quotes WHERE {0} ORDER BY RANDOM() LIMIT 1".format(clause), likes)
+        else:
+            cur.execute("SELECT id, quote FROM quotes ORDER BY RANDOM() LIMIT 1")
     return cur.fetchone()
 
 def delete_quote(id, context):
@@ -49,6 +58,14 @@ def delete_quote(id, context):
     cur.execute("DELETE FROM quotes WHERE id=? AND context=?", (id, context))
     conn.commit()
     return cur.rowcount != 0
+
+def last_quote(context=None):
+    cur = conn.cursor()
+    if context is not None:
+        cur.execute("SELECT id, quote FROM quotes WHERE context=? ORDER BY id DESC LIMIT 1", (context,))
+    else:
+        cur.execute("SELECT id, quote FROM quotes ORDER BY id DESC LIMIT 1")
+    return cur.fetchone()
 
 def view_quote(id, context=None):
     cur = conn.cursor()
@@ -64,14 +81,17 @@ def safestem(q):
     except Exception:
         return q
 
-def find_quote(like, context=None):
+def make_like_clauses(like):
     likes = [
         "%" + safestem(l.strip()).replace("!", "!!").replace("%", "!%") + "%"
         for l in like.split(" ")
     ]
 
     clauses = ["quote LIKE ? ESCAPE \"!\""] * len(likes)
-    clause = " AND ".join(clauses)
+    return likes, " AND ".join(clauses)
+
+def find_quote(like, context=None):
+    likes, clause = make_like_clauses(like)
 
     cur = conn.cursor()
 
@@ -125,14 +145,17 @@ while True:
                     else:
                         write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
             elif command == "rand":
-                quote = random_quote(target.lower())
+                quote = random_quote(args)
                 if quote is None:
                     write_line(server, "PRIVMSG", [target, "Quote not found."])
                 else:
                     qid, content = quote
                     write_line(server, "PRIVMSG", [target, "\x02Quote {}:\x02 {}".format(qid, content.encode("utf-8"))])
             elif command in ("view", "read"):
-                quote = view_quote(args, target.lower())
+                if args.strip() == "last":
+                   quote = last_quote()
+                else:
+                    quote = view_quote(args)
                 if quote is None:
                     write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
                 else:
@@ -142,7 +165,7 @@ while True:
                 if not args:
                     write_line(server, "PRIVMSG", [target, "Huh?"])
                 else:
-                    qids = find_quote(args, target.lower())
+                    qids = find_quote(args)
                     if not qids:
                         write_line(server, "PRIVMSG", [target, "No quotes found matching criteria."])
                     elif len(qids) == 1:

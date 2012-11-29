@@ -1,0 +1,41 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import random
+import sqlite3
+import string
+
+handshake("DICKS")
+
+config = load_config()
+
+loud = sqlite3.connect("loud.db")
+loud.execute("""CREATE TABLE IF NOT EXISTS loud(
+	id INTEGER PRIMARY KEY,
+	quote TEXT
+)""")
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        if msg.upper() == msg and len(msg) >= 4 and any(c for c in msg if c in string.ascii_uppercase):
+            msg = msg.strip()
+
+            c = loud.cursor()
+            c.execute("SELECT quote FROM loud ORDER BY RANDOM() LIMIT 1")
+
+            row = c.fetchone()
+
+            if row is not None:
+                quote, = row
+                write_line(server, "PRIVMSG", [target, quote.encode("utf-8")])
+
+            c.execute("SELECT quote FROM loud WHERE quote = ?", [msg.decode("utf-8")])
+
+            if c.fetchone() is None:
+                c.execute("INSERT INTO loud(quote) VALUES (?)", [msg.decode("utf-8")])
+            loud.commit()

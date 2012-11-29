@@ -1,0 +1,54 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import textwrap
+import gevent
+import json
+import urllib
+import urllib2
+
+handshake("MOVIES AND SHIT")
+
+config = load_config()
+
+def truncate(text, max_size):
+    if len(text) <= max_size:
+        return text
+    return textwrap.wrap(text, max_size-3)[0] + "..."
+
+def worker(server, target, query):
+    d = json.load(urllib2.urlopen("http://api.rottentomatoes.com/api/public/v1.0/movies.json?" + urllib.urlencode({
+        'q': query,
+        'apikey': config["rottentomatoes.apikey"],
+        'page_limit': 1
+    })))
+
+    if d["total"] == 0:
+        write_line(server, "PRIVMSG", [target, "\x02Rotten Tomatoes:\x02 (no result)"])
+        return
+
+    movie = d["movies"][0]
+
+    write_line(server, "PRIVMSG", [target, "\x02Rotten Tomatoes:\x02 {} ({}): {} | Ratings: {}% {} (Critics), {}% {} (Audience)".format(
+        movie["title"], movie["year"], truncate(movie["synopsis"] or "(no synopsis)", 100),
+        movie["ratings"].get("critics_score", -1), movie["ratings"].get("critics_rating", "Unrated"),
+        movie["ratings"].get("audience_score", -1), movie["ratings"].get("audience_rating", "Unrated")
+    ).encode("utf-8")])
+
+def core():
+    while True:
+        server, prefix, command, args = read_line()
+
+        if command.lower() == "privmsg":
+            target, msg = args
+
+            parts = msg.split(" ", 1)
+            if parts[0].lower() == "!rt":
+                query = parts[1:] and parts[1] or ""
+                gevent.spawn(worker, server, target, query)
+
+        gevent.sleep(0)
+
+gevent.spawn(core).join()
+

@@ -48,17 +48,21 @@ CONTROL_CODES = {
 class IRCClient(object):
     def __init__(self, address, nick, user, realname, source_address=None):
         self.address = address
-        self.gsock = socket.create_connection(address, source_address=(source_address, 0))
-
         self.nick = nick
         self.user = user
         self.realname = realname
+        self.source_address = (source_address, 0) if source_address is not None else None
 
     @property
     def server(self):
         return "{}:{}".format(*self.address)
 
+    def connect(self):
+        self.gsock = socket.create_connection(self.address, source_address=self.source_address)
+
     def main(self):
+        self.connect()
+
         buf = ""
 
         self.send_command("NICK", self.nick)
@@ -76,6 +80,14 @@ class IRCClient(object):
                 self.process_comamnd(parse_line(line))
 
             gevent.sleep(0)
+
+    def _main(self):
+        while True:
+            try:
+                self.main()
+            except:
+                self.gsock.close()
+                pass
 
     def process_comamnd(self, line):
         log.debug("< {}".format(line))
@@ -101,5 +113,5 @@ class IRCClient(object):
         self.send_command("PONG", args)
 
     def run(self):
-        gevent.spawn(self.main).join()
+        gevent.spawn(self._main).join()
 

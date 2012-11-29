@@ -24,7 +24,7 @@ def worker(server, target, query):
         if not first:
             result = "(no result)"
 
-        result = u"{}: {}".format(first.text(), first.attr("href"))
+        result = u"{}: {}".format(first.text(), requests.head(first.attr('href')).headers['location'] or '(no result)')
 
     write_line(server, "PRIVMSG", [target, "\x02Glorious China:\x02 {}".format(result.encode("utf-8"))])
 

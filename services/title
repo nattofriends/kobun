@@ -26,7 +26,7 @@ def worker(server, target, url):
         write_line(server, "PRIVMSG", [target, "\x02Request Error:\x02 {}".format(e)])
         return
 
-    content_type = response.headers.get("content-type", "application/octet-stream").split(";")[0]
+    content_type = response.headers.get("content-type", "text/html").split(";")[0]
 
     if content_type not in ("text/html",):
         write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(content_type)])

@@ -4,7 +4,7 @@ import json
 from . import irc
 
 def load_config():
-    with open("config.json", "r") as f:
+    with open(sys.argv[1], "r") as f:
         return json.load(f)
 
 def handshake(info):
@@ -19,4 +19,9 @@ def read_line():
 def write_line(server, command, args):
     sys.stdout.write(server + " " + irc.make_line(command, args) + "\n")
     sys.stdout.flush()
+
+def parse_prefix(prefix):
+    nick, rest = prefix.split("!", 1)
+    user, host = rest.split("@", 1)
+    return nick, user, host
 

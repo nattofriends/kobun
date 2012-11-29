@@ -1,0 +1,40 @@
+#!/usr/bin/env python2
+# encoding: utf-8
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import random
+
+handshake(":js:")
+
+config = load_config()
+
+CHOICES = \
+"""Programmers who took a little math love to tell others how math is necessary. It is not. e.g. http://news.ycombinator.com/item?id=4408849
+At heart I'm a web server guy. Always will be, I think. Everything looks like a web server to me.
+I believe that #dartlang is being dangerously conservative with their syntax. Semicolons - really? Semicolons => shitty REPL
+I'm planning to switch to MSFT Surface and Windows 8 as soon as I can buy it. (I just don't care about unix anymore - at all.)
+We should not be supporting more programming languages. We should be killing them. All these bullshit projects are confusing people.
+scala, clojure, coffescript, lua, C#, ruby, perl need to be euthanized
+The only interesting languages are C/C++, Go, Dart, JS (and possibly Rust). Everything else is legacy bullshit.
+the average jquery kid will never pick it up. maybe i'm wrong. i'm interested in things that have mass usability.
+i don't care about [programming language] research - just projects that solve my problems of making web servers and then gets out of the way.
+(on Lua) it's basically the same thing as JS just slower and and with a much smaller user base. also ugly.
+I love Erlang but I cannot get the past the syntax.
+I do not like the JVM because it takes too long to startup and has a bad history of XML files and IDE integration - which give me a bad vibe.
+Syntax and overall vibe are important to me.
+I'm a systems person attempting to make programming better.
+Yep, serialized message passing between threads is slower. But it doesn't matter because that's not the bottleneck for real websites.
+I want programming computers to be like coloring with crayons and playing with duplo blocks. If my job was keeping Twitter up, of course I'd using a robust technology like the JVM.
+Node.js has linear speedup over multiple cores for web servers.""".split('\n')
+
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        if ":js:" in msg:
+            write_line(server, "PRIVMSG", [target, "\x02Ryan Dahl says:\x02 {}".format(random.choice(CHOICES))])
+
