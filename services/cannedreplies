@@ -14,6 +14,8 @@ RESPONSES = {
     "gface":    u"( ≖‿≖)",
     "cool":     u"COOL LIKE SNOWMAN ☃",
     "chownface":u"( ´· ‿ ·`)",
+    "le-spj-face.jpg": "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
+    "le-kobun-face.jpg": "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg"
 }
 
 while True:

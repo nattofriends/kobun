@@ -1,0 +1,56 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import random
+import regex
+import string
+import unicodedata
+
+handshake("fuggg :DD:D:DD")
+
+config = load_config()
+
+def benisify(s):
+    return reduce(lambda acc, f: f(acc), [
+        lambda s: s.lower(),
+        lambda s: unicodedata.normalize('NFKD', s),
+        lambda s: s.replace('x', 'cks'),
+        lambda s: regex.sub(r'ing','in', s),
+        lambda s: regex.sub(r'you', 'u', s),
+        lambda s: regex.sub(r'oo', lambda _: random.randint(1, 5) * 'u', s),
+        lambda s: regex.sub(r'\w\0', lambda x: random.randint(1, 2) * x.group(0)[0], s),
+        lambda s: regex.sub(r'ck', lambda _: random.randint(1, 5) * 'g', s),
+        lambda s: regex.sub(r'(t+)(?=[aeiouys]|\b)', lambda x: 'd' * len(x.group(1)), s),
+        lambda s: s.replace('p', 'b'),
+        lambda s: regex.sub(r'\bthe\b', 'da', s),
+        lambda s: regex.sub(r'\bc', 'g', s),
+        lambda s: regex.sub(r'\bis\b', 'are', s),
+        lambda s: regex.sub(r'c+(?![eiy])', lambda _: random.randint(1, 5) * 'g', s),
+        lambda s: regex.sub(r'k+(?=[aeiouy]|\b)', lambda _: random.randint(1, 5) * 'g', s),
+#        lambda s: s.title(),
+        lambda s: regex.sub(r'([?!.]|$)+', lambda x: (x.group(0) * random.randint(2, 5)) + " " + "".join((":" * random.randint(1, 2)) + ("D" * random.randint(1, 4)) for _ in range(random.randint(2, 5))), s),
+    ], s)
+
+
+last_lines = {
+}
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        parts = msg.split(" ", 1)
+
+        if parts[0].lower() == "!benis":
+            if len(parts) == 2:
+                what = parts[1]
+            else:
+                what = last_lines.get((server, target), "")
+
+            what = what.strip().decode("utf-8")
+            write_line(server, "PRIVMSG", [target, benisify(what).encode("utf-8")])
+        else:
+            last_lines[server, target] = msg

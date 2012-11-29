@@ -1,0 +1,55 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+from pyquery import PyQuery as pq
+
+import json
+import requests
+import gevent
+import urllib
+
+handshake("google translate")
+
+config = load_config()
+
+
+def worker(server, target, query, sl, tl):
+    r = requests.get("http://translate.google.com/translate_a/t?" + urllib.urlencode({
+        'client': 'p',
+        'sl': sl,
+        'tl': tl,
+        'text': query,
+        'ie': 'UTF-8',
+        'oe': 'UTF-8',
+        'multires': 1
+    }), headers={'User-Agent': 'Mojilla/5.0'}).json
+
+    write_line(server, "PRIVMSG", [target, "\x02Translate:\x02 {}".format(" ".join(x['trans'] for x in r['sentences']).encode("utf-8"))])
+
+def core():
+    while True:
+        server, prefix, command, args = read_line()
+
+        if command.lower() == "privmsg":
+            target, msg = args
+
+            parts = msg.split(" ", 1)
+            if parts[0].lower().startswith("!tl"):
+                langpair = parts[0][3:].split("|")
+
+                sl = "auto"
+                tl = "en"
+
+                if len(langpair) == 1:
+                    sl, = langpair
+                if len(langpair) == 2:
+                    sl, tl = langpair
+
+                query = parts[1:] and parts[1] or ""
+                gevent.spawn(worker, server, target, query, sl, tl)
+
+        gevent.sleep(0)
+
+gevent.spawn(core).join()
+

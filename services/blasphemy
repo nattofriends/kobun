@@ -1,0 +1,32 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+from kobunsupport.irc import parse_prefix
+
+import os
+import re
+
+from cobe.brain import Brain
+
+handshake("mutilate bible passages with markov chains!")
+
+config = load_config()
+
+brain = Brain("blasphemy.db")
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        nick, user, host = parse_prefix(prefix)
+        target, msg = args
+
+        if re.compile("god|jesus|christ", re.IGNORECASE).search(msg):
+            if re.compile(r"^(god|jesus|christ)[:,]?", re.IGNORECASE).match(msg):
+                msg = re.compile(r"^(god|jesus|christ)[:,]? ", re.IGNORECASE).sub("", msg)
+                reply = brain.reply(msg).encode("utf-8")
+                write_line(server, "PRIVMSG", [target, "{}: {}".format(nick, reply)])
+            else:
+                reply = brain.reply(msg).encode("utf-8")
+                write_line(server, "PRIVMSG", [target, reply])
+

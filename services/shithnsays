@@ -1,0 +1,33 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import gevent
+import requests
+import json
+import random
+
+handshake("something something node")
+
+config = load_config()
+
+
+def worker(server, target):
+    write_line(server, "PRIVMSG", [target, "\x02Shit HN Says:\x02 {}".format(
+        random.choice(json.loads(requests.get("https://api.twitter.com/1/statuses/user_timeline.json?id=shit_hn_says").text))['text'].encode('utf-8')
+    )])
+
+def core():
+    while True:
+        server, prefix, command, args = read_line()
+
+        if command.lower() == "privmsg":
+            target, msg = args
+
+            if ":hn:" in msg:
+                gevent.spawn(worker, server, target)
+
+        gevent.sleep(0)
+
+gevent.spawn(core).join()
+

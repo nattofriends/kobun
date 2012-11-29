@@ -27,7 +27,7 @@ class HypervisedService(object):
         self.greenlet = None
 
         try:
-            self.proc = subprocess.Popen(os.path.join("services", fn),
+            self.proc = subprocess.Popen([os.path.join("services", fn), self.hypervisor.config_fn],
                                          stdout=subprocess.PIPE,
                                          stdin=subprocess.PIPE)
         except OSError as e:
@@ -60,7 +60,7 @@ class HypervisedService(object):
             gevent.socket.wait_read(self.proc.stdout.fileno())
             server, raw_line = self.proc.stdout.readline().split(" ", 1)
             self.proc.stdout.flush()
-            self.hypervisor.irc_clients[server].raw(raw_line)
+            self.hypervisor.irc_clients[server].raw(raw_line[:1000])
 
     def start(self):
         g = gevent.spawn(self.handshake)
@@ -135,7 +135,7 @@ class Hypervisor(object):
             self.irc_clients[server] = irc_client
 
         for irc_client in self.irc_clients.values():
-            self.irc_group.add(gevent.spawn(irc_client.main))
+            self.irc_group.add(gevent.spawn(irc_client._main))
 
     def run(self):
         log.info("Starting service clients...")
@@ -156,8 +156,8 @@ class Hypervisor(object):
                 service.proc.stdin.flush()
             except OSError as e:
                 self.notify_error("{} died: {}".format(client_fn, e))
-                service.stop()
-                service.start()
+                self.unload_service(service.fn)
+                self.load_service(service.fn)
 
     def on_privmsg(self, irc_client, prefix, target, message):
         if not any(re.match(admin_expr, prefix) for admin_expr in self.config["servers"][irc_client.server]["admins"]):
@@ -275,7 +275,7 @@ class Hypervisor(object):
                                 target,
                                 "\x02{} service(s) under hypervisor:\x02 {}".format(
                                     len(self.service_clients),
-                                    ", ".join(self.service_clients)
+                                    ", ".join(sorted(self.service_clients))
                                 )
                             )
                     elif params[0].lower() == "irc":
@@ -288,7 +288,7 @@ class Hypervisor(object):
                                 target,
                                 "\x02{} IRC connection(s) under hypervisor:\x02 {}".format(
                                     len(self.irc_clients),
-                                    ", ".join(self.irc_clients)
+                                    ", ".join(sorted(self.irc_clients))
                                 )
                             )
 
