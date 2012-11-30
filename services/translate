@@ -27,6 +27,23 @@ def worker(server, target, query, sl, tl):
 
     write_line(server, "PRIVMSG", [target, "\x02Translate:\x02 {}".format(" ".join(x['trans'] for x in r['sentences']).encode("utf-8"))])
 
+def multiworker(server, target, query, langs):
+    while len(langs) > 1:
+        r = requests.get("http://translate.google.com/translate_a/t?" + urllib.urlencode({
+            'client': 'p',
+            'sl': langs[0],
+            'tl': langs[1],
+            'text': query,
+            'ie': 'UTF-8',
+            'oe': 'UTF-8',
+            'multires': 1
+        }), headers={'User-Agent': 'Mojilla/5.0'}).json
+        
+        query = " ".join(x['trans'] for x in r['sentences']).encode("utf-8")
+        langs = langs[1:]
+    
+    write_line(server, "PRIVMSG", [target, "\x02Translate:\x02 {}".format(query)])
+
 def core():
     while True:
         server, prefix, command, args = read_line()
@@ -47,7 +64,13 @@ def core():
                     sl, tl = langpair
 
                 query = parts[1:] and parts[1] or ""
-                gevent.spawn(worker, server, target, query, sl, tl)
+
+                if len(langpair) > 20:
+                    write_line(server, "PRIVMSG", [target, "\x02Translate:\x02 NO, Thank You!"])
+                elif len(langpair) > 2:
+                    gevent.spawn(multiworker, server, target, query, langpair)
+                else:
+                    gevent.spawn(worker, server, target, query, sl, tl)
 
         gevent.sleep(0)
 
