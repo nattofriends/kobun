@@ -26,6 +26,7 @@ while True:
         target, msg = args
 
         match = REGEX_EXPR.match(msg)
+        replaced = False
 
         if match is not None:
             find = match.group("find")
@@ -36,6 +37,16 @@ while True:
 
                 new_text = re.sub(find, replace, text)
                 if not new_text == text:
+                    replaced = True
                     write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
-        
+
+            if not replaced:
+                for x in HISTORY:
+                    new_text = re.sub(find, replace, HISTORY[x])
+                    if not new_text == HISTORY[x]:
+                        write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, x, new_text)])
+                        break
+
         HISTORY[nick] = msg
+
+# vim: set ts=4 sw=4 sta et sts=4 ai:
