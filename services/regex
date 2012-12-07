@@ -2,7 +2,7 @@
 
 from kobunsupport import load_config, handshake, read_line, write_line
 from kobunsupport.irc import parse_prefix
-import logging
+from operator import itemgetter
 
 handshake("nattofriends is a faggot")
 
@@ -10,13 +10,20 @@ config = load_config()
 
 import re
 
-log = logging.getLogger("regex.matching")
-
-REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1')
+REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1$')
 HISTORY = {}
 
-RATE_LIMIT = {}
-RATE_LIMIT_TIME = 10
+def unixtime():
+    import calendar
+    import time
+    return calendar.timegm(time.gmtime())
+
+def safe_sub(find, replace, text):
+    try:
+        return re.sub(find, replace, text)
+    except:
+        return text #www
+
 
 while True:
     server, prefix, command, args = read_line()
@@ -31,22 +38,30 @@ while True:
         if match is not None:
             find = match.group("find")
             replace = match.group("replace")
-            
-            if nick in HISTORY:
-                text = HISTORY[nick]
 
-                new_text = re.sub(find, replace, text)
-                if not new_text == text:
-                    replaced = True
-                    write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
+            if server in HISTORY:
+                H = HISTORY[server]
+                if nick in H:
+                    _, text = H[nick]
 
-            if not replaced:
-                for x in HISTORY:
-                    new_text = re.sub(find, replace, HISTORY[x])
-                    if not new_text == HISTORY[x]:
-                        write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, x, new_text)])
-                        break
+                    new_text = safe_sub(find, replace, text)
+                    if not new_text == text:
+                        replaced = True
+                        write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
 
-        HISTORY[nick] = msg
+                if not replaced:
+                    # sort by timestamp
+                    SORTED_HISTORY = sorted(((H[x][0], x, H[x][1]) for x in H), key=itemgetter(0), reverse=True)
+                    for _, x, text in SORTED_HISTORY:
+                        new_text = safe_sub(find, replace, text)
+                        if not new_text == text:
+                            write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, x, new_text)])
+                            break
+
+        try:
+            HISTORY[server][nick] = (unixtime(), msg)
+        except KeyError, e:
+            HISTORY[server] = {} # I'm not sure which is worse: this, or `if not server in HISTORY: ...`
+            HISTORY[server][nick] = (unixtime(), msg)
 
 # vim: set ts=4 sw=4 sta et sts=4 ai:
