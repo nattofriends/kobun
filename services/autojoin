@@ -15,3 +15,7 @@ while True:
             write_line(server, "JOIN", [channel])
             time.sleep(0.5)
 
+        if "nickpass" in config["servers"][server]:
+            write_line(server, "PRIVMSG", ["NickServ", "IDENTIFY {}".format(config["servers"][server]["nickpass"])])
+
+# vim: set ts=4 sw=4 sta et sts=4 ai:

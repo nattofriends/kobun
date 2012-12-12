@@ -145,7 +145,7 @@ while True:
                     else:
                         write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
             elif command == "rand":
-                quote = random_quote(args)
+                quote = random_quote(args, target.lower())
                 if quote is None:
                     write_line(server, "PRIVMSG", [target, "Quote not found."])
                 else:
@@ -155,7 +155,7 @@ while True:
                 if args.strip() == "last":
                    quote = last_quote()
                 else:
-                    quote = view_quote(args)
+                    quote = view_quote(args, target.lower())
                 if quote is None:
                     write_line(server, "PRIVMSG", [target, "Quote {} not found.".format(args)])
                 else:
