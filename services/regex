@@ -10,7 +10,7 @@ config = load_config()
 
 import re
 
-REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1$')
+REGEX_EXPR = re.compile(r's(.)(?P<find>.*(?!\1).)\1(?P<replace>.*(?!\1).)\1(?P<extra>\S*)$')
 HISTORY = {}
 
 def unixtime():
@@ -38,25 +38,49 @@ while True:
         if match is not None:
             find = match.group("find")
             replace = match.group("replace")
+            extra = match.group("extra")
+
+            match_self = True
+            match_target = None
+            if extra == 'o':
+                match_self = False
+            elif extra == 's':
+                match_target = nick
+            elif extra.startswith('t='):
+                match_target = extra[2:]
 
             if server in HISTORY:
                 H = HISTORY[server]
-                if nick in H:
-                    _, text = H[nick]
 
-                    new_text = safe_sub(find, replace, text)
-                    if not new_text == text:
-                        replaced = True
-                        write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
+                # if we have a match target, only try that
+                if match_target is not None:
+                    if match_target in H:
+                        _, text = H[match_target]
 
-                if not replaced:
-                    # sort by timestamp
-                    SORTED_HISTORY = sorted(((H[x][0], x, H[x][1]) for x in H), key=itemgetter(0), reverse=True)
-                    for _, x, text in SORTED_HISTORY:
                         new_text = safe_sub(find, replace, text)
                         if not new_text == text:
-                            write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, x, new_text)])
-                            break
+                            if match_target == nick:
+                                write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
+                            else:
+                                write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, match_target, new_text)])
+                else:
+                    # if we don't want to match ourselves, honor that.
+                    if nick in H and match_self:
+                        _, text = H[nick]
+
+                        new_text = safe_sub(find, replace, text)
+                        if not new_text == text:
+                            replaced = True
+                            write_line(server, "PRIVMSG", [target, "{} meant: {}".format(nick, new_text)])
+
+                    if not replaced:
+                        # sort by timestamp
+                        SORTED_HISTORY = sorted(((H[x][0], x, H[x][1]) for x in H), key=itemgetter(0), reverse=True)
+                        for _, x, text in SORTED_HISTORY:
+                            new_text = safe_sub(find, replace, text)
+                            if not new_text == text:
+                                write_line(server, "PRIVMSG", [target, "{} thinks {} meant: {}".format(nick, x, new_text)])
+                                break
 
         try:
             HISTORY[server][nick] = (unixtime(), msg)

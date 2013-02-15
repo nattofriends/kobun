@@ -15,7 +15,8 @@ RESPONSES = {
     "cool":     u"COOL LIKE SNOWMAN ☃",
     "chownface":u"( ´· ‿ ·`)",
     "le-spj-face.jpg": "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
-    "le-kobun-face.jpg": "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg"
+    "le-kobun-face.jpg": "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg",
+    "http://25.media.tumblr.com/tumblr_m5n4y9l4mw1ryt8iao4_1280.jpg": "NuclearPoweredKimJongIl is a faggot."
 }
 
 while True:

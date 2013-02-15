@@ -12,7 +12,7 @@ config = load_config()
 DERPS = {
     'rain' : ["<kedo> when it's raining hard <kedo> is really the best time to wet your pants in public"],
     'k701s' : ["<kedo> you can sniff the earpieces and pretend you're smelling mango"],
-    'girls' : ["<kedo> 2d girls made me gay for 3d men", "<kedo> <natto> I'm so glad I'm flat-chested", "<kedo> cocks or gtfo"],
+    'girls' : ["<kedo> 2d girls made me gay for 3d men", "<kedo> <natto> I'm so glad I'm flat-chested", "<kedo> cocks or gtfo", "<@kedo> joshi shougakusei <+Hime1> joshi youchiensei <@kedo> joshi poop <@kedo> i like that"],
     'essays' : ["<kedo> also, writing this makes me feel autistic <kedo> i like boats, boats are intersting. boats boats boats"],
     'hunches' : [u"<raphtown> i am onto you! * raphtown shakes fist <kedo> i am into you <nattofriends> saved to the kedo file * kedo shakes fist <kedo> :3 <raphtown> FFFFF <raphtown> kedooooo"],
     'unwillingness' : ['<kedo> "nooooo not in the math 1b!!!!"'],
@@ -27,7 +27,9 @@ DERPS = {
     'first times' : [u"<kedo> on second thought, maybe sunday night wasn't the best time to try wine <whimsicalbaga> you got the other think that was coming <kedo> the other think は来たぁぁぁぁー！！！"],
     'dating' : ['<kedo> "hey, tonight was great. how about we go up to my place and poop on me?"'],
     'do-or-die situations' : ['<kedo> the solution is now clear to me. i must analy penetrate the chair to death before it penetrates me to death'],
-    'sisters' : ["<NothingBetterThanAnOlderSister> just gotta fertilize my sisters", "<C00L_AND_SPICY> poop on sisters <C00L_AND_SPICY> it's the only way <kedo> !!! <kedo> my sisters would destroy me"]
+    'sisters' : ["<NothingBetterThanAnOlderSister> just gotta fertilize my sisters", "<C00L_AND_SPICY> poop on sisters <C00L_AND_SPICY> it's the only way <kedo> !!! <kedo> my sisters would destroy me"],
+    'kedo' : ["<&kedo> such sexy kedo ;D", "<+Nol888> kedo is terrible for everyone involved <+Nol888> Highly addictive. <@kedo> s/addi/sedu/ <+HowDoIIntoIRC> kedo thinks Nol888 meant: Highly seductive."],
+    'spam' : ["<@kedo> gdi, free pornhub premium reg isn't working because i think gmail and ocf are marking it as spam"]
 }
 
 
