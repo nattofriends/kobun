@@ -16,7 +16,7 @@ DERPS = {
     'essays' : ["<kedo> also, writing this makes me feel autistic <kedo> i like boats, boats are intersting. boats boats boats"],
     'hunches' : [u"<raphtown> i am onto you! * raphtown shakes fist <kedo> i am into you <nattofriends> saved to the kedo file * kedo shakes fist <kedo> :3 <raphtown> FFFFF <raphtown> kedooooo"],
     'unwillingness' : ['<kedo> "nooooo not in the math 1b!!!!"'],
-    'bros' : ["<kedo> bros get off on brosex <warmness> saved to the kedo file"],
+    'bros' : ["<kedo> bros get off on brosex <warmness> saved to the kedo file", "<@kedo> choo choo all aboard mango's dick"],
     'mechanical keyboards' : ["<warmness> kedo what do you think of mechanical keyboards <kedo> FEELS SO GOOD <warmness> you came youn typing? <warmness> *upon <kedo> IKUUUUU"],
     'rss feeds' : ["<kedo> ugh, i hate when my hentai rss feeds update <kedo> and i see them in a public place <kedo> like my room"],
     'mai-hime' : ["<kedo> mai-hime <nattofriends> gdi <nattofriends> im not even in front of my homework <Nol888> ahh, senpai! da~me! <nattofriends> im in front of this unholy irc client <kedo> ikuuuuuu"],
@@ -25,11 +25,12 @@ DERPS = {
     'advice' : ["<kedo> i will ask internet famous fermented goods"],
     'moving' : ["<nattofriends> \x031,1move in with me\x03 <kedo> nattofriends: \x031,1move into me", "<kedo> One day, I was walking into the DIQUES DIQUES DIQUES"],
     'first times' : [u"<kedo> on second thought, maybe sunday night wasn't the best time to try wine <whimsicalbaga> you got the other think that was coming <kedo> the other think は来たぁぁぁぁー！！！"],
-    'dating' : ['<kedo> "hey, tonight was great. how about we go up to my place and poop on me?"'],
+    'dating' : ['<kedo> "hey, tonight was great. how about we go up to my place and poop on me?"', "<@kedo> pull a check book out of my ass <@kedo> kudasai", "<@kedo> fuck my mouth"],
     'do-or-die situations' : ['<kedo> the solution is now clear to me. i must analy penetrate the chair to death before it penetrates me to death'],
     'sisters' : ["<NothingBetterThanAnOlderSister> just gotta fertilize my sisters", "<C00L_AND_SPICY> poop on sisters <C00L_AND_SPICY> it's the only way <kedo> !!! <kedo> my sisters would destroy me"],
     'kedo' : ["<&kedo> such sexy kedo ;D", "<+Nol888> kedo is terrible for everyone involved <+Nol888> Highly addictive. <@kedo> s/addi/sedu/ <+HowDoIIntoIRC> kedo thinks Nol888 meant: Highly seductive."],
-    'spam' : ["<@kedo> gdi, free pornhub premium reg isn't working because i think gmail and ocf are marking it as spam"]
+    'spam' : ["<@kedo> gdi, free pornhub premium reg isn't working because i think gmail and ocf are marking it as spam"],
+    'summer' : ['<@kedo> "HAGS"']
 }
 
 

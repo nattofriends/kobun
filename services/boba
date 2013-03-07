@@ -1,0 +1,22 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import random
+import time
+
+handshake("imma let you finish")
+
+FAGETRY = "I'd just like to interject for a moment. What you're referring to as boba, is in fact, pearl milk tea, or as I've recently taken to calling it, PMT plus boba."
+
+config = load_config()
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        if "boba" in msg and random.random() <= 0.4:
+            time.sleep(random.randint(1, 4))
+            write_line(server, "PRIVMSG", [target, FAGETRY])
