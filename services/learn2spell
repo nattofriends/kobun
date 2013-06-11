@@ -1,0 +1,32 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+from kobunsupport.irc import parse_prefix
+
+import re
+
+handshake("welcome to america")
+
+q = lambda a: (re.compile(a, re.IGNORECASE), r"\1\2")
+words = {
+    "colour" : q("(colo)u(r)"),
+    "yoghurt" : q("(yog)h(urt)")
+}
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+        msg_lower = msg.lower()
+
+        nick, _, _ = parse_prefix(prefix)
+        replaced = False
+
+        for (word, (find_pattern, replace_string)) in words.items():
+            if word in msg_lower:
+                msg = find_pattern.sub(replace_string, msg)
+                replaced = True
+
+        if replaced:
+            write_line(server, "PRIVMSG", [target, nick + " meant: " + msg])

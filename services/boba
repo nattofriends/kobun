@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 from kobunsupport import load_config, handshake, read_line, write_line
+from kobunsupport.irc import parse_prefix
 
 import random
 import time
@@ -8,6 +9,7 @@ import time
 handshake("imma let you finish")
 
 FAGETRY = "I'd just like to interject for a moment. What you're referring to as boba, is in fact, pearl milk tea, or as I've recently taken to calling it, PMT plus boba."
+REVERSE_FAGETRY = "Did you mean boba?"
 
 config = load_config()
 
@@ -16,7 +18,11 @@ while True:
 
     if command.lower() == "privmsg":
         target, msg = args
+        nick, _, _ = parse_prefix(prefix)
 
         if "boba" in msg and random.random() <= 0.4:
             time.sleep(random.randint(1, 4))
             write_line(server, "PRIVMSG", [target, FAGETRY])
+        elif "pmt" in msg and random.random() <= 0.8:
+            time.sleep(random.randint(1, 2))
+            write_line(server, "PRIVMSG", [target, REVERSE_FAGETRY])

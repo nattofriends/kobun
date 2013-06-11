@@ -21,16 +21,17 @@ DERPS = {
     'rss feeds' : ["<kedo> ugh, i hate when my hentai rss feeds update <kedo> and i see them in a public place <kedo> like my room"],
     'mai-hime' : ["<kedo> mai-hime <nattofriends> gdi <nattofriends> im not even in front of my homework <Nol888> ahh, senpai! da~me! <nattofriends> im in front of this unholy irc client <kedo> ikuuuuuu"],
     'stuttering' : ['<Nol888> cue more "fuck you, jay!" <kedo> ~_~ <nattofriends> f-f-fuck you, jay~ <kedo> and then finally, "fuck me, jay~"'],
-    'clothing' : ['<kedo> "i just want to \x031,1smell\x03 wear your clothes"'],
+    'clothing' : ['<kedo> "i just want to \x031,1smell\x03 wear your clothes"', "<+Hime> kedo wear cheerleader outfit <@kedo> i'm not sure how that would motivate me <@kedo> if it had a skirt <@kedo> i'd just have easier access to myself"],
     'advice' : ["<kedo> i will ask internet famous fermented goods"],
     'moving' : ["<nattofriends> \x031,1move in with me\x03 <kedo> nattofriends: \x031,1move into me", "<kedo> One day, I was walking into the DIQUES DIQUES DIQUES"],
     'first times' : [u"<kedo> on second thought, maybe sunday night wasn't the best time to try wine <whimsicalbaga> you got the other think that was coming <kedo> the other think は来たぁぁぁぁー！！！"],
     'dating' : ['<kedo> "hey, tonight was great. how about we go up to my place and poop on me?"', "<@kedo> pull a check book out of my ass <@kedo> kudasai", "<@kedo> fuck my mouth"],
     'do-or-die situations' : ['<kedo> the solution is now clear to me. i must analy penetrate the chair to death before it penetrates me to death'],
-    'sisters' : ["<NothingBetterThanAnOlderSister> just gotta fertilize my sisters", "<C00L_AND_SPICY> poop on sisters <C00L_AND_SPICY> it's the only way <kedo> !!! <kedo> my sisters would destroy me"],
-    'kedo' : ["<&kedo> such sexy kedo ;D", "<+Nol888> kedo is terrible for everyone involved <+Nol888> Highly addictive. <@kedo> s/addi/sedu/ <+HowDoIIntoIRC> kedo thinks Nol888 meant: Highly seductive."],
+    'sisters' : ["<NothingBetterThanAnOlderSister> just gotta fertilize my sisters", "<C00L_AND_SPICY> poop on sisters <C00L_AND_SPICY> it's the only way <kedo> !!! <kedo> my sisters would destroy me", "<kedo> \"hey mom, can you drive me to a friend's house right now? i need to see his sister\""],
+    'kedo' : ["<&kedo> such sexy kedo ;D", "<+Nol888> kedo is terrible for everyone involved <+Nol888> Highly addictive. <@kedo> s/addi/sedu/ <+HowDoIIntoIRC> kedo thinks Nol888 meant: Highly seductive.", u"<@kedo> i am good <@kedo> i am better than most eroge <+Hime> not in bed you aren't <+Hime> (❛ ◡ ❛)❤", u"<@kedo> 今すぐ会いたいケド the kedo you want to meet soon"],
     'spam' : ["<@kedo> gdi, free pornhub premium reg isn't working because i think gmail and ocf are marking it as spam"],
-    'summer' : ['<@kedo> "HAGS"']
+    'summer' : ['<@kedo> "HAGS"'],
+    'surprises' : ['<@kedo> Dios Mio, I just love how gnome loves to surprise me <@kedo> like suddenly making my mouse not work']
 }
 
 
