@@ -9,6 +9,7 @@ import urllib2
 import gevent
 
 from pyquery import PyQuery as pq
+from requests.packages.chardet.universaldetector import UniversalDetector
 
 handshake("display the title of a page")
 
@@ -33,7 +34,14 @@ def worker(server, target, url):
     else:
         try:
             r = requests.get(url)
-            try: # XXX: DIRTY HORRIBLE BUT WORKING HACK
+            try: # XXX: DIRTY HORRIBLE BUT WORKING HACK (ALSO REQUESTS IS DUM)
+                if r.encoding == "ISO-8859-1":
+                    u = UniversalDetector()
+                    u.feed(r.content)
+                    u.close()
+
+                    if u.result['encoding']:
+                        r.encoding = u.result['encoding']
                 p = pq(r.text or '')
             except ValueError:
                 p = pq(r.content or '')

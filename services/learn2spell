@@ -7,10 +7,15 @@ import re
 
 handshake("welcome to america")
 
+x = lambda a: re.compile(a, re.IGNORECASE)
 q = lambda a: (re.compile(a, re.IGNORECASE), r"\1\2")
 words = {
     "colour" : q("(colo)u(r)"),
-    "yoghurt" : q("(yog)h(urt)")
+    "yoghurt" : q("(yog)h(urt)"),
+    "flavour" : q("(flavo)u(r)"),
+    "connexion" : (x("(conne)x(ion)"), r"\1ct\2"),
+    "favour" : q("(favo)u(r)"),
+    "bastardise" : (x("(bastardi)s(e)"), r"\1z\2")
 }
 
 while True:

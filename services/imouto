@@ -1,0 +1,31 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import re
+
+handshake("pics of imouto pls")
+
+config = load_config()
+
+last_lines = {
+}
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        parts = msg.split(" ", 1)
+
+        if parts[0].lower() == "!imouto":
+            if len(parts) == 2:
+                what = parts[1]
+            else:
+                what = last_lines.get((server, target), "")
+
+            what = what.strip().decode("utf-8")
+            write_line(server, "PRIVMSG", [target, re.sub(r'\w\w\w\w+', 'imouto', what).encode("utf-8")])
+        else:
+            last_lines[server, target] = msg
