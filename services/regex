@@ -48,6 +48,8 @@ while True:
                 match_target = nick
             elif extra.startswith('t='):
                 match_target = extra[2:]
+            elif len(extra):
+                continue
 
             if server in HISTORY:
                 H = HISTORY[server]
