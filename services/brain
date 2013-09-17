@@ -25,6 +25,10 @@ while True:
         target, msg = args
 
         if re.compile(re.escape(nickname), re.IGNORECASE).search(msg):
+            if 'legendaryq' in host.lower() or 'legendaryq' in nick.lower() or 'legendary' in user.lower() or 'hsd1.co.comcast.net' in host.lower() or '76.25.151.146' in host.lower():
+                write_line(server, "PRIVMSG", [target, "legendaryq ur a butt"])
+                continue
+               
             if re.compile(r"^{}[:,]?".format(re.escape(nickname)), re.IGNORECASE).match(msg):
                 msg = re.compile(r"^{}[:,]? ".format(re.escape(nickname)), re.IGNORECASE).sub("", msg)
                 reply = brain.reply(msg).encode("utf-8")

@@ -85,7 +85,8 @@ class IRCClient(object):
         while True:
             try:
                 self.main()
-            except:
+            except Exception as e:
+                print(e)
                 self.gsock.close()
                 pass
 

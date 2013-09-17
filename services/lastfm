@@ -1,0 +1,158 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line, parse_prefix
+
+from pyquery import PyQuery as pq
+
+import gevent
+import urllib
+import json
+import os
+
+handshake("get info from last.fm")
+
+config = load_config()
+
+user_file_name = "lastfm_users.json"
+users_config = dict()
+
+def load_user_config():
+    global users_config
+    if not os.path.exists(user_file_name):
+        save_user_config()
+
+    with open(user_file_name, "r") as f:
+        users_config = json.load(f)
+
+def save_user_config():
+    with open(user_file_name, "w") as f:
+        json.dump(users_config, f)
+
+
+def query_lastfm(method, arguments):
+    p = pq(url="http://ws.audioscrobbler.com/2.0/?" + urllib.urlencode({
+        'method': method,
+        'api_key': "ebfbda6fb42b69b084844b567830513b",
+    }) + "&" + urllib.urlencode(arguments))
+
+    return p
+
+def compare_users(user1, user2):
+    res = query_lastfm("tasteometer.compare", {"type1": "user", "type2": "user", "value1": user1, "value2": user2 })
+
+    score = res("comparison > result > score").text()
+    artists = [a.text() for a in res("comparison > result > artists > artist").items("name")]
+
+    return "[{0} vs {1}] {2:.2%} -- {3}".format(user1, user2, float(score), ", ".join(artists))
+
+def user_now_playing(user):
+    res = query_lastfm("user.getRecentTracks", {"user": user, "limit": 1 })
+
+    track = res("recenttracks > track[nowplaying='true']")
+
+    if track:
+        artist = track("artist").text()
+        name = track("name").text()
+        album = track("album").text()
+
+        # get track info
+        track_tags_r = query_lastfm("track.getTopTags", { "artist": artist, "track": name })
+        tags = [t.text() for t in track_tags_r("toptags > tag").items("name")]
+
+        return "[{0}]: {1} - {2} [{3}] ({4})".format(user, artist, name, album, ", ".join(tags[:5]))
+
+    return "[{0}] is not playing anything :( needs moar SCROBBLING".format(user)
+
+def setup_user(irc_name, user_name):
+    users_config[irc_name] = user_name
+
+
+def send_response(server, target, response):
+    write_line(server, "PRIVMSG", [target, "\x02last.fm:\x02 {}".format(response.encode("utf-8"))])
+
+def compare_worker(server, prefix, target, query):
+    nick, user, host = parse_prefix(prefix)
+
+    result = ""
+    if len(query) == 0:
+        result = "No user to compare to."
+
+    if len(query) == 1:
+        to_name = query[0]
+        if to_name in users_config:
+            to_name = users_config[to_name]
+
+        if nick not in users_config:
+            result = "{0} please setup your last.fm username with !lfm".format(nick)
+        else:
+            result = compare_users(users_config[nick], to_name)
+
+    if len(query) == 2:
+        from_name = query[0]
+        to_name = query[1]
+
+        if from_name in users_config:
+            from_name = users_config[from_name]
+
+        if to_name in users_config:
+            to_name = users_config[to_name]
+
+        result = compare_users(from_name, to_name)
+
+    send_response(server, target, result)
+
+
+def now_playing_worker(server, prefix, target, query):
+    nick, user, host = parse_prefix(prefix)
+    if len(query) == 0:
+        if nick not in users_config:
+            send_response(server, target, "You havent setup your last.fm username, use !lfm")
+            return
+
+        send_response(server, target, user_now_playing(users_config[nick]))
+        return
+
+    if len(query) == 1:
+        name = query[0]
+        if name in users_config:
+            name = users_config[name]
+
+        send_response(server, target, user_now_playing(name))
+
+
+def setup_user_worker(server, prefix, target, query):
+    nick, user, host = parse_prefix(prefix)
+    if len(query) == 0:
+        send_response(server, target, "Specify a last.fm username god dammit.")
+        return
+
+    users_config[nick] = query[0]
+    save_user_config()
+
+    send_response(server, target, "{0} set to {1}".format(nick, query[0]))
+
+
+def core():
+    while True:
+        server, prefix, command, args = read_line()
+
+        if command.lower() == "privmsg":
+            target, msg = args
+
+            parts = msg.split(" ")
+            cm = parts[0].lower()
+            query = parts[1:] or ""
+
+            if cm == "!np":
+                gevent.spawn(now_playing_worker, server, prefix, target, query)
+
+            if cm == "!compare":
+                gevent.spawn(compare_worker, server, prefix, target, query)
+
+            if cm == "!lfm":
+                gevent.spawn(setup_user_worker, server, prefix, target, query)
+
+        gevent.sleep(0)
+
+load_user_config()
+gevent.spawn(core).join()

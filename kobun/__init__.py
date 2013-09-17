@@ -1,7 +1,7 @@
-from .hypervisor import Hypervisor
+from .supervisor import Supervisor
 
 def run(config):
-    Hypervisor(config).run()
+    Supervisor(config).run()
 
 if __name__ == '__main__':
     run()

@@ -1,5 +1,6 @@
 import sys
 import json
+import os
 
 from . import irc
 
@@ -8,6 +9,7 @@ def load_config():
         return json.load(f)
 
 def handshake(info):
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
     sys.stdout.write("{} {}\n".format(sys.stdin.readline().strip(), info))
     sys.stdout.flush()
 

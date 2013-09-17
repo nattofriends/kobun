@@ -14,7 +14,7 @@ config = load_config()
 
 def worker(server, target, query):
     p = pq(url="http://api.wolframalpha.com/v2/query?" + urllib.urlencode({
-        'input': query,
+        'input': "ip=.nz " + query,
         'appid': config["wolframalpha.appid"],
         'format': 'plaintext'
     }))

@@ -23,7 +23,7 @@ def worker(server, target, query, sl, tl):
         'ie': 'UTF-8',
         'oe': 'UTF-8',
         'multires': 1
-    }), headers={'User-Agent': 'Mojilla/5.0'}).json
+    }), headers={'User-Agent': 'Mojilla/5.0'}).json()
 
     write_line(server, "PRIVMSG", [target, "\x02Translate:\x02 {}".format(" ".join(x['trans'] for x in r['sentences']).encode("utf-8"))])
 

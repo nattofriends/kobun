@@ -2,8 +2,21 @@
 # encoding: utf-8
 
 from kobunsupport import load_config, handshake, read_line, write_line
+from kobunsupport.gay import gay
 
 import random
+import ctypes
+
+libgface = ctypes.cdll.LoadLibrary('./libgface.so.1.0.0')
+
+libgface.gface_init.argtypes = [ctypes.c_char_p]
+libgface.gface_acquire.restype = ctypes.c_wchar_p
+
+def gface():
+    libgface.gface_init("auREAX is a fag")
+    gf = libgface.gface_acquire()
+    libgface.gface_shutdown()
+    return gf
 
 handshake("erryday i'm gfacing")
 
@@ -11,12 +24,27 @@ config = load_config()
 
 
 RESPONSES = {
-    "gface":    u"( ≖‿≖)",
-    "cool":     u"COOL LIKE SNOWMAN ☃",
-    "chownface":u"( ´· ‿ ·`)",
-    "le-spj-face.jpg": "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
-    "le-kobun-face.jpg": "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg"
+    lambda x: "gface" in x.lower():             gface,
+    lambda x: "edgyface" in x.lower():          u"(ケ≖‿≖)ケ",
+#    lambda x: "cool" in x.lower():              u"COOL LIKE BANANA 🍌 ",
+    lambda x: "chownface" in x.lower():         u"( ´· ‿ ·`)",
+    lambda x: "adventure time" in x.lower():    u"| (• ◡•)|  (❍ᴥ❍ʋ)",
+    lambda x: "le-spj-face.jpg" in x.lower():   "http://dl.dropbox.com/u/2880866/le-spj-face.jpg",
+    lambda x: "le-kobun-face.jpg" in x.lower(): "http://dl.dropbox.com/u/2880866/le-kobun-face.jpg",
+    lambda x: x.strip() == "man":               "MAN",
+    lambda x: x.strip() == "MAN":               "man",
+    lambda x: "dface" in x.lower():             u"ಠ_ಠ",
+    lambda x: "lenny" in x.lower():             u"( ͡° ͜ʖ ͡°)",
+#    lambda x: "rape" in x.lower():              gay(u"\u2620\u3000\uFF32\uFF21\uFF30\uFF25\u3000\uFF21\uFF2C\uFF2C\u3000\uFF34\uFF28\uFF25\u3000\uFF26\uFF21\uFF27\uFF33\uFF01\u3000\u2620"),
+    lambda x: "goface" in x.lower():            u"ʕ ◔ϖ◔ʔ",
+#    lambda x: x.strip() == "lol":               "r u havin a giggle m8?"
 }
+
+def fuk_unicode(s):
+    if isinstance(s, unicode):
+        return s.encode("utf-8")
+    return s
+
 
 while True:
     server, prefix, command, args = read_line()
@@ -25,10 +53,11 @@ while True:
         target, msg = args
 
         cands = []
-        for cand, repl in RESPONSES.iteritems():
-            if cand in msg:
-                cands.append(repl)
+        for cand, reply in RESPONSES.iteritems():
+            if callable(reply): reply = reply()
+            if cand(msg):
+                cands.append(reply)
 
         if cands:
-            write_line(server, "PRIVMSG", [target, random.choice(cands).encode("utf-8")])
+            write_line(server, "PRIVMSG", [target, fuk_unicode(random.choice(cands))])
 
