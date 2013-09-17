@@ -35,7 +35,6 @@ RESPONSES = {
     lambda x: x.strip() == "MAN":               "man",
     lambda x: "dface" in x.lower():             u"ಠ_ಠ",
     lambda x: "lenny" in x.lower():             u"( ͡° ͜ʖ ͡°)",
-#    lambda x: "rape" in x.lower():              gay(u"\u2620\u3000\uFF32\uFF21\uFF30\uFF25\u3000\uFF21\uFF2C\uFF2C\u3000\uFF34\uFF28\uFF25\u3000\uFF26\uFF21\uFF27\uFF33\uFF01\u3000\u2620"),
     lambda x: "goface" in x.lower():            u"ʕ ◔ϖ◔ʔ",
 #    lambda x: x.strip() == "lol":               "r u havin a giggle m8?"
 }
