@@ -19,21 +19,22 @@ SCAN_EXPR = re.compile(r'http[s]?://[^\s<>"]+|www\.[^\s<>"]+')
 DESPACE_EXPR = re.compile(r'\s+')
 
 def worker(server, target, url):
+    headers = {'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:23.0) Gecko/20130426 Firefox/23.0'}
     if not (url.startswith("http:") or url.startswith("https:")):
         url = "http://" + url
     try:
-        response = requests.head(url)
+        response = requests.head(url, headers=headers)
     except requests.RequestException as e:
         write_line(server, "PRIVMSG", [target, "\x02Request Error:\x02 {}".format(e)])
         return
 
     content_type = response.headers.get("content-type", "text/html").split(";")[0]
 
-    if content_type not in ("text/html",):
+    if content_type not in ("text/html", "application/xhtml+xml"):
         write_line(server, "PRIVMSG", [target, "\x02Content Type:\x02 {}".format(content_type)])
     else:
         try:
-            r = requests.get(url)
+            r = requests.get(url, headers=headers)
             try: # XXX: DIRTY HORRIBLE BUT WORKING HACK (ALSO REQUESTS IS DUM)
                 if r.encoding == "ISO-8859-1":
                     u = UniversalDetector()

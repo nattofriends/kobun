@@ -1,0 +1,51 @@
+#!/usr/bin/env python2
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+import time
+import datetime
+
+from parsedatetime.parsedatetime import Calendar
+
+handshake("le countdown")
+
+config = load_config()
+
+cal = Calendar()
+
+timers = { }
+
+def add_timer(name, ds):
+    timers[name] = time.mktime(cal.parse(ds)[0])
+
+
+def show_timer(name):
+    t = timers[name] - time.time()
+    if t < 0:
+        suffix = "ago"
+    else:
+        suffix = "away"
+    return str(int(abs(t))) + " seconds " + suffix
+
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+
+        parts = msg.split(" ", 2)
+
+        if parts[0].lower() == "!countdown":
+            if len(parts) == 3:
+                ds = parts[2]
+                add_timer(parts[1], parts[2])
+
+            if len(parts) < 2:
+                continue
+
+            if parts[1] not in timers:
+                write_line(server, "PRIVMSG", [target, "\x02Countdown:\x02 {} not found."])
+            else:
+                write_line(server, "PRIVMSG", [target, "\x02Countdown:\x02 {} is {}.".format(parts[1], show_timer(parts[1]))])
+

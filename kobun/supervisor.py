@@ -14,24 +14,25 @@ from gevent import subprocess
 import functools
 import logging
 
-log = logging.getLogger("kobun.hypervisor")
+log = logging.getLogger("kobun.supervisor")
 
 
 class ServiceError(Exception): pass
 
 
-class HypervisedService(object):
-    def __init__(self, hypervisor, fn):
-        self.hypervisor = hypervisor
+class SupervisedService(object):
+    def __init__(self, supervisor, fn):
+        self.supervisor = supervisor
         self.fn = fn
         self.greenlet = None
 
         try:
-            self.proc = subprocess.Popen([os.path.join("services", fn), self.hypervisor.config_fn],
+            self.proc = subprocess.Popen([os.path.join("services", fn), self.supervisor.config_fn],
                                          stdout=subprocess.PIPE,
                                          stdin=subprocess.PIPE)
         except OSError as e:
             raise ServiceError(str(e))
+
 
     def handshake(self):
         k = uuid.uuid4().hex
@@ -57,10 +58,10 @@ class HypervisedService(object):
         self.greenlet = gevent.getcurrent()
 
         while True:
-            gevent.socket.wait_read(self.proc.stdout.fileno())
+#            gevent.socket.wait_read(self.proc.stdout.fileno())
             server, raw_line = self.proc.stdout.readline().split(" ", 1)
             self.proc.stdout.flush()
-            self.hypervisor.irc_clients[server].raw(raw_line[:1000])
+            self.supervisor.irc_clients[server].raw(raw_line[:1000])
 
     def start(self):
         g = gevent.spawn(self.handshake)
@@ -76,8 +77,8 @@ class HypervisedService(object):
             pass
 
 
-class Hypervisor(object):
-    RC_EXPR = re.compile("!hypervisor(?: (?P<params>.*))?")
+class Supervisor(object):
+    RC_EXPR = re.compile("!supervisor(?: (?P<params>.*))?")
 
     def __init__(self, config_fn):
         self.config_fn = config_fn
@@ -94,7 +95,7 @@ class Hypervisor(object):
     def load_service(self, fn):
         if fn in self.service_clients:
             raise ServiceError("Service already loaded")
-        service = HypervisedService(self, fn)
+        service = SupervisedService(self, fn)
         g = service.start()
         g.link(lambda _: self.register_service(service))
         return service, g
@@ -147,7 +148,7 @@ class Hypervisor(object):
         self.irc_group.join()
 
     def notify_error(self, e):
-        log.warn("Hypervisor Error: {}".format(e))
+        log.warn("Supervisor Error: {}".format(e))
 
     def on_raw(self, server, line):
         for client_fn, service in self.service_clients.items():
@@ -200,7 +201,7 @@ class Hypervisor(object):
                                 if len(params) != 2:
                                     irc_client.send_msg(
                                         target,
-                                        "\x02Hypervisor Error:\x02 need 1 parameter exactly"
+                                        "\x02Supervisor Error:\x02 need 1 parameter exactly"
                                     )
                                 else:
                                     service = params[1]
@@ -220,7 +221,7 @@ class Hypervisor(object):
                                 if len(params) != 2:
                                     irc_client.send_msg(
                                         target,
-                                        "\x02Hypervisor Error:\x02 need 1 parameter exactly"
+                                        "\x02Supervisor Error:\x02 need 1 parameter exactly"
                                     )
                                 else:
                                     service = params[1]
@@ -241,7 +242,7 @@ class Hypervisor(object):
                                 if len(params) != 2:
                                     irc_client.send_msg(
                                         target,
-                                        "\x02Hypervisor Error:\x02 need 1 parameter exactly"
+                                        "\x02Supervisor Error:\x02 need 1 parameter exactly"
                                     )
                                 else:
                                     service = params[1]
@@ -273,7 +274,7 @@ class Hypervisor(object):
                         else:
                             irc_client.send_msg(
                                 target,
-                                "\x02{} service(s) under hypervisor:\x02 {}".format(
+                                "\x02{} service(s) under supervisor:\x02 {}".format(
                                     len(self.service_clients),
                                     ", ".join(sorted(self.service_clients))
                                 )
@@ -286,7 +287,7 @@ class Hypervisor(object):
                         else:
                             irc_client.send_msg(
                                 target,
-                                "\x02{} IRC connection(s) under hypervisor:\x02 {}".format(
+                                "\x02{} IRC connection(s) under supervisor:\x02 {}".format(
                                     len(self.irc_clients),
                                     ", ".join(sorted(self.irc_clients))
                                 )
@@ -318,7 +319,7 @@ class Hypervisor(object):
             else:
                 irc_client.send_msg(
                     target,
-                    "\x02Hypervisor summary:\x02 {} service client(s), {} IRC client(s)".format(
+                    "\x02Supervisor summary:\x02 {} service client(s), {} IRC client(s)".format(
                         len(self.service_clients),
                         len(self.irc_clients)
                     )
