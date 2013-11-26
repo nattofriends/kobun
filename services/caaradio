@@ -1,0 +1,42 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+
+from kobunsupport import load_config, handshake, read_line, write_line
+
+from lxml import etree
+import requests
+
+handshake("PLASTIC TIC TAC")
+
+config = load_config()
+auth = (config["caaradio.user"], config["caaradio.pass"])
+
+def get_now_playing():
+    r = etree.fromstring(requests.get(config["caaradio.url"], auth=auth).content)
+
+    mount_exists = bool(r.xpath("source[@mount='{}']".format(config["caaradio.mount"])))
+    artist = r.xpath("source[@mount='{}']/artist/text()".format(config["caaradio.mount"]))
+    title = r.xpath("source[@mount='{}']/title/text()".format(config["caaradio.mount"]))
+
+    if not mount_exists:
+        return None
+    return (artist[0] if artist else None, title[0] if title else None)
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+        if target.lower() != config["caaradio.channel"]:
+            continue
+
+        parts = msg.split(' ', 1)
+
+        if parts[0] == '.np':
+            np = get_now_playing()
+            if not np:
+                write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 Nothing!"])
+            elif np == (None, None):
+                write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 No metadata available!"])
+            else:
+                write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 {}".format(" - ".join(np).encode("utf-8"))])

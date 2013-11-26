@@ -12,7 +12,7 @@ while True:
 
     if command == "376":
         for channel in config["servers"][server]["channels"]:
-            write_line(server, "JOIN", [channel])
+            write_line(server, "JOIN", channel.split(" "))
             time.sleep(0.5)
 
         if "nickpass" in config["servers"][server]:

@@ -12,7 +12,7 @@ config = load_config()
 DERPS = {
     'rain' : ["<kedo> when it's raining hard <kedo> is really the best time to wet your pants in public"],
     'k701s' : ["<kedo> you can sniff the earpieces and pretend you're smelling mango"],
-    'girls' : ["<kedo> 2d girls made me gay for 3d men", "<kedo> <natto> I'm so glad I'm flat-chested", "<kedo> cocks or gtfo", "<@kedo> joshi shougakusei <+Hime1> joshi youchiensei <@kedo> joshi poop <@kedo> i like that"],
+    'girls' : ["<kedo> 2d girls made me gay for 3d men", "<kedo> <natto> I'm so glad I'm flat-chested", "<kedo> cocks or gtfo", "<@kedo> joshi shougakusei <+Hime1> joshi youchiensei <@kedo> joshi poop <@kedo> i like that", "<@kedo> endless waves of schoolgirls would fulfill my needs :-)"],
     'essays' : ["<kedo> also, writing this makes me feel autistic <kedo> i like boats, boats are intersting. boats boats boats"],
     'hunches' : [u"<raphtown> i am onto you! * raphtown shakes fist <kedo> i am into you <nattofriends> saved to the kedo file * kedo shakes fist <kedo> :3 <raphtown> FFFFF <raphtown> kedooooo"],
     'unwillingness' : ['<kedo> "nooooo not in the math 1b!!!!"'],
@@ -31,7 +31,10 @@ DERPS = {
     'kedo' : ["<&kedo> such sexy kedo ;D", "<+Nol888> kedo is terrible for everyone involved <+Nol888> Highly addictive. <@kedo> s/addi/sedu/ <+HowDoIIntoIRC> kedo thinks Nol888 meant: Highly seductive.", u"<@kedo> i am good <@kedo> i am better than most eroge <+Hime> not in bed you aren't <+Hime> (❛ ◡ ❛)❤", u"<@kedo> 今すぐ会いたいケド the kedo you want to meet soon"],
     'spam' : ["<@kedo> gdi, free pornhub premium reg isn't working because i think gmail and ocf are marking it as spam"],
     'summer' : ['<@kedo> "HAGS"'],
-    'surprises' : ['<@kedo> Dios Mio, I just love how gnome loves to surprise me <@kedo> like suddenly making my mouse not work']
+    'surprises' : ['<@kedo> Dios Mio, I just love how gnome loves to surprise me <@kedo> like suddenly making my mouse not work'],
+    'presentations' : ['<+nattofriends> ugh, dont want to poop on presentation <@kedo> if you wanted to go full exhibitionist mode, your presentation is the best time to do it'],
+    'abuse' : ['<kedo> I abuse who and what I want, when and where I want'],
+    'the american dream' : ['<&kedo> 2 balls in every ballsack, a car in every garage, a turkey in every pot <&kedo> that\'s my american dream']
 }
 
 
@@ -43,7 +46,7 @@ while True:
 
         parts = msg.split(' ', 1)
 
-       	if parts[0] == '!kedo':
+        if parts[0] == '!kedo':
             if len(parts) == 1:
                 write_line(server, "PRIVMSG", [target, "\x02kedo knows about:\x02 {}".format(", ".join(DERPS))])
                 continue
