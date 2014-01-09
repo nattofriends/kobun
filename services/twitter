@@ -1,0 +1,43 @@
+#!/usr/bin/env python2
+# -*- encoding: utf-8 -*-
+
+from kobunsupport import load_config, handshake, read_line, write_line
+from tweepy.streaming import StreamListener
+from tweepy import OAuthHandler, Stream
+
+handshake("Now with 20% more faggotry!")
+
+config = load_config()
+consumer_key = config['twitter.key']
+consumer_secret = config['twitter.secret']
+access_token = config['twitter.token']
+access_token_secret = config['twitter.token_secret']
+
+class KobunTwitterListener(StreamListener):
+    def __init__(self, write_line_fn):
+        super(KobunTwitterListener, self).__init__()
+        self.announce = write_line_fn
+
+    def on_status(self, status):
+        url_format = "(https://twitter.com/{0.user.screen_name}/status/{0.id_str})"
+        if hasattr(status, 'retweeted_status'):
+              text = u"\x02[@{0.user.screen_name} RT @{0.retweeted_status.user.screen_name}]\x02 {0.retweeted_status.text} " + url_format
+        else:
+              text = u"\x02[@{0.user.screen_name}]\x02 {0.text} " + url_format
+
+        text = text.format(status)
+        self.announce(text.encode('utf-8'))
+
+while True:
+    server, prefix, command, args = read_line()
+
+    if command.lower() == "privmsg":
+        target, msg = args
+        if msg == '!twitter':
+            write_line(server, "PRIVMSG", [target, "Now streaming tweets to \x02{}\x02! Unload module to stop.".format(target)])
+
+            ktl = KobunTwitterListener(lambda x: write_line(server, "PRIVMSG", [target, x]))
+            auth = OAuthHandler(consumer_key, consumer_secret)
+            auth.set_access_token(access_token, access_token_secret)
+            stream = Stream(auth, ktl)
+            stream.userstream()

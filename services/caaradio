@@ -20,7 +20,7 @@ def get_now_playing():
 
     if not mount_exists:
         return None
-    return (artist[0] if artist else None, title[0] if title else None)
+    return (artist[0] if artist else "", title[0] if title else "")
 
 while True:
     server, prefix, command, args = read_line()
@@ -36,7 +36,7 @@ while True:
             np = get_now_playing()
             if not np:
                 write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 Nothing!"])
-            elif np == (None, None):
+            elif np == ("", ""):
                 write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 No metadata available!"])
             else:
                 write_line(server, "PRIVMSG", [target, "\x02Now playing:\x02 {}".format(" - ".join(np).encode("utf-8"))])
